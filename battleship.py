@@ -1,5 +1,7 @@
 import random as rnd
 import sys
+from colorama import init, Fore, Style
+init()
 
 class BoardOutException(Exception):
     pass
@@ -67,7 +69,7 @@ class Board:
 
     def add_ship(self, ship):                   #adding a ship on the Board using Ship class, if allowed
         init_fig = '■'
-        ship_fig = '\033[0;31m' + init_fig + '\033[0;0m'
+        ship_fig = Fore.RED + init_fig + Style.RESET_ALL
         for dot in ship.dots():
             if self.out(dot):
                 raise BoardOutException("Не выходите за пределы доски!")
@@ -96,9 +98,8 @@ class Board:
             for j in range(-1, 2):
 
                 if pos := self.get_dot(dot.x, i, dot.y, j):
-                    if '\033[0;31m' not in pos:
-                        self.field[dot.x + i][dot.y + j] = '\033[0;31m' + self.field[dot.x + i][dot.y + j] + '\033[0;0m'
-                    #print(self.field[dot.x + i][dot.y + j])
+                    if Fore.RED not in pos:
+                        self.field[dot.x + i][dot.y + j] = Fore.RED + self.field[dot.x + i][dot.y + j] + Style.RESET_ALL
 
     def show(self):                             #show a current state of a board
         if self.hid:
@@ -115,7 +116,7 @@ class Board:
 
     def shot(self, dot):                        #make a shot in a valid dot return the symbol placed
         init_fig = 'X'
-        shot_fig = '\033[0;31m' + init_fig + '\033[0;0m'
+        shot_fig = Fore.RED + init_fig + Style.RESET_ALL
         if self.out(dot):
             raise BoardOutException("Не выходите за пределы доски!")
 
@@ -133,6 +134,7 @@ class Board:
                     if elem.hp:                 #check if ship is still alive
                         print("Ранил!")
                     else:
+                        self.alive -= 1
                         print("Убил!")
 
             return 'X'
@@ -327,6 +329,8 @@ class Game:                                     #create players and play game
 
             while self.user.move(help) or self.ai_board.total_hp < ai_board_hp:             #check if move is right and hp has decreased
 
+                print(f"У противника осталось {self.ai_board.alive} кораблей")
+
                 if self.ai_board.total_hp < ai_board_hp:
                     print("-------------------------------------------------------------------------------------")
                     print("Ваша доска                               Карта ваших попаданий")
@@ -374,7 +378,7 @@ class Game:                                     #create players and play game
         else:
             self.random_board(self.user_board)
 
-        while (answer := input("Вы хотите выделять красным область вокруг вашего выстрела"
+        while (answer := input("Вы хотите выделять красным область вокруг вашего выстрела "
                                "после попадания (Да/Нет)?: ").lower()) != "да" \
                                 and answer != "нет":
             print("Наберите Да или Нет")
