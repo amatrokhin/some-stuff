@@ -31,11 +31,8 @@ class CurrencyConverter:
         if amount <= 0:
             raise APIException(f'Не удалось обработать количество {amount}')
 
-        #r = requests.get('https://www.cbr-xml-daily.ru/daily_json.js')
-        #currencies = r.json()
-        #if base
+
         url = f"https://api.apilayer.com/currency_data/convert?to={quote.upper()}&from={base.upper()}&amount={amount}"
-        #r = requests.request("GET", url, headers={'apikey': API_KEY})
         r = requests.get(url, headers={'apikey': API_KEY})
         total_quote = json.loads(r.content)['result']
 
